@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>COMP 3612 - Single Page Application</title>
+        <link rel="stylesheet" href="styles.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <a href="#home" id="home-link">Home</a>
+                <nav>
+                    <a href="#search" id="search-link">Search</a>
+                    <a href="#playlist" id="playlist-link">Playlist</a>
+                    <a href="#credits" id="credits-link">Credits</a>
+                </nav>
+            </header>
+            <main>
+                <div id="home" class="home">
+                    <div class="home-column">
+                    </div>
+                    <div class="home-column">
+                    </div>
+                    <div class="home-column">
+                    </div>
+                </div>
+                <div id="search" class="filter">
+                    <div class="filter-column">
+                        <h3>Basic Song Search</h3>
+                        <form action="" id="filter-song">
+                            <div>
+                                <input type="radio" id="title" name="filterCriteria" checked>
+                                <label for="title">Title</label>
+                                <input type="text" placeholder="Type Here" id="titleInput">
+                            </div>
+                            <div>
+                                <input type="radio" id="artist" name="filterCriteria">
+                                <label for="artist">Artist</label>
+                                <select id="artistSelection">
+                                    <!-- Populate with artist dynamically if needed -->
+                                </select>
+                            </div>
+                            <div>
+                                <input type="radio" id="genre" name="filterCriteria">
+                                <label for="genre">Genre</label>
+                                <select id="genreSelection">
+                                    <!-- Populate with genre dynamically if needed -->
+                                </select>
+                            </div>
+                            <div>
+                                <input type="reset" value="Clear" id="clearButton">
+                                <input type="submit" value="Filter" id="filterButton">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="song-results filter-column">
+                        <h3>Browse / Search Results</h3>
+                        <div id="searchResults">
+                            <div class="result-item">
+                                <table style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Artist</th>
+                                            <th>Year</th>
+                                            <th>Genre</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Song Title i</td>
+                                            <td>Artist Name i</td>
+                                            <td>2018</td>
+                                            <td>Pop</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="single-song" class="single-song">
+
+                </div>
+                <div id="playlist" class="playlist">
+
+                </div>
+            </main>
+            <footer>Footer</footer>
+        </div>
+        <div id="credits-popup" class="popup">
+            <!-- Add content for the pop-up here -->
+        </div>
+        <div id="snackbar" class="snackbar"></div>
+        <script src="assign2.js"></script>
+    </body>
+</html>
