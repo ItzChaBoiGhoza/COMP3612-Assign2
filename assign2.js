@@ -1,4 +1,5 @@
 const api = 'http://www.randyconnolly.com/funwebdev/3rd/api/music';
+let playlist = [];
 
 function fetchDataApi(endpoint, filter = {}) { // Source for this function is from stack overflow
    const url = new URL(`${api}/${endpoint}`);
@@ -92,10 +93,6 @@ function searchViewSetup() {
    const filterForm = document.querySelector('#filter-song');
    const searchResultsContainer = document.querySelector('#searchResults');
 
-   function resetSearchResults() {
-      searchResultsContainer.innerHTML = '';
-   }
-
    filterForm.addEventListener('submit', function (event) {
       event.preventDefault(); // Prevents the default form submission behavior
 
@@ -110,25 +107,20 @@ function searchViewSetup() {
             let filteredSongs = allSongsData;
 
             if (filterCriteria === 'artist') {
-               // Filter by selected artist
                const selectedArtist = document.querySelector('#artistSelection').value;
                filteredSongs = allSongsData.filter(song => song.artist_name === selectedArtist);
             } else if (filterCriteria === 'genre') {
-               // Filter by selected genre
                const selectedGenre = document.querySelector('#genreSelection').value;
                filteredSongs = allSongsData.filter(song => song.genre_name === selectedGenre);
             } else {
-               // Default filter by input value, which is filter through title
                filteredSongs = allSongsData.filter(song => {
                   const valueToCheck = song[filterCriteria.toLowerCase()];
                   return valueToCheck && valueToCheck.toLowerCase().includes(inputValue.toLowerCase());
                });
             }
 
-            // Clear existing results
             searchResultsContainer.innerHTML = '';
 
-            // Display new search results
             displaySearchResults(searchResultsContainer, filteredSongs);
          })
          .catch(function (error) {
@@ -137,83 +129,158 @@ function searchViewSetup() {
       } 
    });
 
-   // Clear button event listener
    const clearButton = document.querySelector('input[type="reset"]');
    clearButton.addEventListener('click', function() {
-      // Clear the input field
       document.querySelector('#titleInput').value = '';
 
-      // Clear existing results
+   
       searchResultsContainer.innerHTML = '';
-
-      // Clear the search results
-      resetSearchResults();
    });
 
-   // Populate artist and genre options
    populateArtistOptions();
    populateGenreOptions();
 }
 
 function displaySearchResults(container, searchResultsData) {
-   // Clear existing results
+   
    container.innerHTML = '';
 
-   // Create table elements
-   const table = document.createElement('table');
-   table.style.width = '100%';
+   const resultSearchTable = document.createElement('table');
+   resultSearchTable.style.width = '100%';
 
-   // Create table header
-   const thead = document.createElement('thead');
-   const headerRow = document.createElement('tr');
-   ['Title', 'Artist', 'Year', 'Genre'].forEach(function (headerText) {
-      const th = document.createElement('th');
-      th.textContent = headerText;
-      headerRow.appendChild(th);
+   const resultSearchTableHead = document.createElement('thead');
+   const resultSearchHeaderRow = document.createElement('tr');
+   ['Title', 'Artist', 'Year', 'Genre', 'Add to Playlist'].forEach(function (headerText) {
+      const resultSearchTh = document.createElement('th');
+      resultSearchTh.textContent = headerText;
+      resultSearchHeaderRow.appendChild(resultSearchTh);
    });
-   thead.appendChild(headerRow);
-   table.appendChild(thead);
+   resultSearchTableHead.appendChild(resultSearchHeaderRow);
+   resultSearchTable.appendChild(resultSearchTableHead);
 
-   // Create table body
-   const tbody = document.createElement('tbody');
+   const resultSearchTableBody = document.createElement('tbody');
    searchResultsData.forEach(function (song) {
-      const tr = document.createElement('tr');
+      const resultSearchTr = document.createElement('tr');
 
-      // Append table data for each column
       ['title', 'artist_name', 'year', 'genre_name'].forEach(function (columnName) {
-         const td = document.createElement('td');
+         const resultSearchTd = document.createElement('td');
 
-         // Check if it's the title column
          if (columnName === 'title') {
-            // Create a link element
             const titleLink = document.createElement('a');
-            titleLink.href = '#'; // Update this with the link to Single Song View
+            titleLink.href = '#'; 
+            resultSearchTd.classList.add('song-title');
             titleLink.textContent = song[columnName];
             
-            // Add an event listener to handle the click and display Single Song View
             titleLink.addEventListener('click', function () {
                singleSongView(song);
                showSingleSongView();
             });
 
-            // Append the link element to the table data
-            td.appendChild(titleLink);
+            resultSearchTd.appendChild(titleLink);
          } else {
-            // For other columns, simply set the text content
-            td.textContent = song[columnName];
+            resultSearchTd.textContent = song[columnName];
          }
 
-         // Append the table data to the table row
-         tr.appendChild(td);
+         resultSearchTr.appendChild(resultSearchTd);
       });
 
-      // Append the table row to the table body
-      tbody.appendChild(tr);
-   });
-   table.appendChild(tbody);
+      const addSongTd = document.createElement('td');
+      const addSongLink = document.createElement('a');
+      
+      addSongLink.href = '#';
+      addSongLink.text = 'Add';
+      addSongTd.classList.add('add-song-button');
+      addSongLink.addEventListener('click', function() {
+         addSongToPlayList(song);
+      });
 
-   // Append the table to the container
-   container.appendChild(table);
+      addSongTd.appendChild(addSongLink);
+      resultSearchTr.appendChild(addSongTd);
+
+      resultSearchTableBody.appendChild(resultSearchTr);
+   });
+   resultSearchTable.appendChild(resultSearchTableBody);
+
+   container.appendChild(resultSearchTable);
+}
+
+function addSongToPlayList(song) {
+   if(!playlist.some(item => item.song_id === song.song_id)) {
+      playlist.push(song);
+      updatePlaylistView();
+   } else {
+      alert('Song is already in the Playlist');
+   }
+}
+
+function removeSongFromPlaylist(songId) {
+   playlist = playlist.filter(song => song.song_id !== songId);
+   updatePlaylistView();
+}
+
+const clearPlaylistButton = document.querySelector('.playlist-clear a');
+clearPlaylistButton.addEventListener('click', function() {
+   clearPlaylist();
+});
+
+function clearPlaylist() {
+   playlist = [];
+   updatePlaylistView();
+   document.querySelector('.playlist-information p').textContent = `${playlist.length} songs, average popularity: 0`
+}
+
+function updatePlaylistView() {
+   const playlistTableBody = document.querySelector('#playlist-view tbody');
+   playlistTableBody.innerHTML = '';
+
+   playlist.forEach(function(song) {
+      const createTr = document.createElement('tr');
+      ['title', 'artist_name', 'year', 'genre_name'].forEach(function(columnName) {
+         const createTd = document.createElement('td');
+         if(columnName === 'title') {
+            const titleLink = document.createElement('a');
+            titleLink.href = '#';
+            createTd.classList.add('song-title');
+            titleLink.textContent = song[columnName];
+
+            titleLink.addEventListener('click', function() {
+               singleSongView(song);
+               showSingleSongView();
+            });
+            createTd.appendChild(titleLink);
+         } else {
+            createTd.textContent = song[columnName];
+         }
+
+         createTr.appendChild(createTd);
+      });
+
+      const removeSongTd = document.createElement('td');
+      const removeSong = document.createElement('a');
+      removeSong.href = '#';
+      removeSong.text = 'Remove';
+      removeSongTd.classList.add('remove-song');
+      removeSong.addEventListener('click', function() {
+         removeSongFromPlaylist(song.song_id);
+      });
+
+      removeSongTd.appendChild(removeSong);
+      createTr.appendChild(removeSongTd);
+
+      playlistTableBody.appendChild(createTr);
+   })
+
+   const playlistInfo = document.querySelector('.playlist-information p');
+
+   const avgPlaylistPopularity = calculatePopularity();
+
+   playlistInfo.textContent = `${playlist.length} songs, average popularity: ${avgPlaylistPopularity.toFixed(0)}`;
+}
+
+function calculatePopularity() {
+   const totalPopularity = playlist.reduce((sum, song) => sum + parseInt(song.popularity), 0);
+
+   return totalPopularity / playlist.length;
 }
 
 function singleSongView(song) {
@@ -309,20 +376,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
    document.querySelector('#search-link').addEventListener('click', function() {
       hideHomeView();
+      hidePlaylistView();
       showSearchView();
    })
 
    document.querySelector('#home-link').addEventListener('click', function() {
       showHomeView();
       hideSearchView();
+      hidePlaylistView();
    })
 
    document.querySelector('#back-button').addEventListener('click', function() {
       hideSingleSongView();
       showSearchView();
-      document.querySelector('#searchResults').innerHTML = '';
+   })
+
+   document.querySelector('#playlist-link').addEventListener('click', function() {
+      hideSearchView();
+      hideHomeView();
+      showPlaylistView();
    })
 });
+
+function showPlaylistView() {
+   const playlistView = document.querySelector('#playlist');
+   playlistView.style.display = 'block';
+}
+
+function hidePlaylistView() {
+   const playlistView = document.querySelector('#playlist');
+   playlistView.style.display = 'none';
+}
 
 function showSingleSongView() {
    const singleSongView = document.querySelector('#single-song');
