@@ -260,7 +260,7 @@ flex: 1;
 padding: 15px;
 }
 
-#back-button {
+#back-search-button {
     padding: 15px;
     text-decoration: none;
     color: #046bba;
@@ -268,7 +268,19 @@ padding: 15px;
     float: right;
 }
 
-#back-button:hover {
+#back-search-button:hover {
+    color: #3aa5f7;
+}
+
+#back-home-button {
+    padding: 15px;
+    text-decoration: none;
+    color: #046bba;
+    margin-top: 75px;
+    float: left;
+}
+
+#back-home-button:hover {
     color: #3aa5f7;
 }
 

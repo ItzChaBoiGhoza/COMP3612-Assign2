@@ -22,7 +22,20 @@ function displayContent(container, title, data) {
    container.innerHTML = `<h3>${title}</h3>`;
    data.slice(0, 10).forEach(function(item) {
       const itemElement = document.createElement('p');
-      itemElement.textContent = item.name || item.title;
+      if(item.title) {
+         const itemLink = document.createElement('a');
+         itemLink.href = '#';
+         itemLink.textContent = item.title;
+         itemElement.classList.add('song-title');
+         itemLink.addEventListener('click', function() {
+            singleSongView(item);
+            showSingleSongView();
+            hideHomeView();
+         })
+         itemElement.appendChild(itemLink);
+      } else {
+         itemElement.textContent = item.name;
+      }
       container.appendChild(itemElement);
    });
 }
@@ -386,9 +399,14 @@ document.addEventListener('DOMContentLoaded', function() {
       hidePlaylistView();
    })
 
-   document.querySelector('#back-button').addEventListener('click', function() {
+   document.querySelector('#back-search-button').addEventListener('click', function() {
       hideSingleSongView();
       showSearchView();
+   })
+
+   document.querySelector('#back-home-button').addEventListener('click', function() {
+      showHomeView();
+      hideSingleSongView();
    })
 
    document.querySelector('#playlist-link').addEventListener('click', function() {
