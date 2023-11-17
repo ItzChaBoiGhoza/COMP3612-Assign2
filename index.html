@@ -50,8 +50,8 @@
                                 </select>
                             </div>
                             <div>
-                                <input type="reset" value="Clear" id="clearButton">
                                 <input type="submit" value="Filter" id="filterButton">
+                                <input type="reset" value="Clear" id="clearButton">
                             </div>
                         </form>
                     </div>
@@ -59,30 +59,33 @@
                         <h3>Browse / Search Results</h3>
                         <div id="searchResults">
                             <div class="result-item">
-                                <table style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>Title</th>
-                                            <th>Artist</th>
-                                            <th>Year</th>
-                                            <th>Genre</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Song Title i</td>
-                                            <td>Artist Name i</td>
-                                            <td>2018</td>
-                                            <td>Pop</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div id="single-song" class="single-song">
-
+                    <div class="song-details" id="song-details">
+                        <h3>Song Information</h3>
+                        <div class="song-info">
+                            <h4>Title: <span id="song-title" style="font-weight: 300;"></span></h4>
+                            <h4>Artist: <span id="song-artist" style="font-weight: 300;"></span></h4>
+                            <h4>Genre: <span id="song-genre" style="font-weight: 300;"></span></h4>
+                            <h4>Year Released: <span id="song-year" style="font-weight: 300;"></span></h4>
+                            <h4>Duration: <span id="song-duration" style="font-weight: 300;"></span></h4>
+                        </div>
+                        <div class="song-analysis">
+                            <h4>Song Analysis Data:</h4>
+                            <ul id="analysis-list">
+                            </ul>
+                        </div>
+                        <div>
+                            <a href="#search" id="back-button">Back to Search</a>
+                        </div>
+                    </div>
+                    <div class="song-radar-chart-column" style="width: 500px; height: 500px;">
+                        <h3 id="single-view-title"></h3>
+                        <canvas id="radar-chart"></canvas>
+                    </div>
                 </div>
                 <div id="playlist" class="playlist">
 

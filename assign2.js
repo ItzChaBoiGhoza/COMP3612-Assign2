@@ -93,28 +93,7 @@ function searchViewSetup() {
    const searchResultsContainer = document.querySelector('#searchResults');
 
    function resetSearchResults() {
-      searchResultsContainer.innerHTML = `
-         <div class="result-item">
-            <table style="width: 100%;">
-               <thead>
-                  <tr>
-                     <th>Title</th>
-                     <th>Artist</th>
-                     <th>Year</th>
-                     <th>Genre</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  <tr>
-                     <td>Song Title i</td>
-                     <td>Artist Name i</td>
-                     <td>2018</td>
-                     <td>Pop</td>
-                  </tr>
-               </tbody>
-            </table>
-         </div>
-      `;
+      searchResultsContainer.innerHTML = '';
    }
 
    filterForm.addEventListener('submit', function (event) {
@@ -204,65 +183,20 @@ function displaySearchResults(container, searchResultsData) {
       ['title', 'artist_name', 'year', 'genre_name'].forEach(function (columnName) {
          const td = document.createElement('td');
 
-         // Truncate title to 25 characters and add ellipsis
-         let truncatedTitle = song[columnName].length > 25 ? song[columnName].substring(0, 25) + '&hellip;' : song[columnName];
-         td.innerHTML = columnName === 'title' ? `<span class="truncate-title" title="${song[columnName]}">${truncatedTitle}</span>` : truncatedTitle;
-
-         tr.appendChild(td);
-      });
-
-      tbody.appendChild(tr);
-   });
-   table.appendChild(tbody);
-
-   // Append the table to the container
-   container.appendChild(table);
-
-   // Add event listener for ellipsis
-   const ellipsisElements = container.querySelectorAll('.truncate-title');
-   ellipsisElements.forEach(function (ellipsisElement) {
-      ellipsisElement.addEventListener('click', function () {
-         showTooltip(ellipsisElement.title);
-      });
-   });
-}
-
-function displaySearchResults(container, searchResultsData) {
-   // Clear existing results
-   container.innerHTML = '';
-
-   // Create table elements
-   const table = document.createElement('table');
-   table.style.width = '100%';
-
-   // Create table header
-   const thead = document.createElement('thead');
-   const headerRow = document.createElement('tr');
-   ['Title', 'Artist', 'Year', 'Genre'].forEach(function (headerText) {
-      const th = document.createElement('th');
-      th.textContent = headerText;
-      headerRow.appendChild(th);
-   });
-   thead.appendChild(headerRow);
-   table.appendChild(thead);
-
-   // Create table body
-   const tbody = document.createElement('tbody');
-   searchResultsData.forEach(function (song) {
-      const tr = document.createElement('tr');
-
-      // Append table data for each column
-      ['title', 'artist_name', 'year', 'genre_name'].forEach(function (columnName) {
-         const td = document.createElement('td');
-
          // Check if it's the title column
          if (columnName === 'title') {
-            // Create an anchor element and set its attributes
+            // Create a link element
             const titleLink = document.createElement('a');
-            titleLink.href = '#'; // Set your desired link destination
+            titleLink.href = '#'; // Update this with the link to Single Song View
             titleLink.textContent = song[columnName];
+            
+            // Add an event listener to handle the click and display Single Song View
+            titleLink.addEventListener('click', function () {
+               singleSongView(song);
+               showSingleSongView();
+            });
 
-            // Append the anchor element to the table data
+            // Append the link element to the table data
             td.appendChild(titleLink);
          } else {
             // For other columns, simply set the text content
@@ -282,38 +216,142 @@ function displaySearchResults(container, searchResultsData) {
    container.appendChild(table);
 }
 
+function singleSongView(song) {
+   hideSearchView();
+   document.querySelector('#song-title').textContent = `${song.title}`;
+   document.querySelector('#song-artist').textContent = `${song.artist_name}`;
+   document.querySelector('#song-genre').textContent = `${song.genre_name}`;
+   document.querySelector('#song-year').textContent = `${song.year}`;
+   document.querySelector('#song-duration').textContent = `${songDurationFormat(song.duration)}`;
+
+   const analysisList = document.querySelector('#analysis-list');
+
+   analysisList.innerHTML = `
+      <li>BPM: ${song.bpm} ${songTempoMean(song)}</li>
+      <li>Energy: ${song.energy} out of 100</li>
+      <li>Danceability: ${song.danceability} out of 100</li>
+      <li>Valence: ${song.valence} out of 100</li>
+      <li>Liveness: ${song.liveness} out of 100</li>
+      <li>Acousticness: ${song.acousticness} out of 100</li>
+      <li>Speechiness: ${song.speechiness} out of 100</li>
+      <li>Popularity: ${song.popularity}</li>
+   `;
+
+   const chartContainer = document.querySelector('.song-radar-chart-column');
+   chartContainer.innerHTML = '';
+
+   songRadarChart(chartContainer, song);
+}
+
+function songTempoMean(song) {
+   if(song.bpm >= 169) {
+      return '(Very Fast Tempo)';
+   } else if(song.bpm >= 121) {
+      return '(Fast Tempo)'
+   } else if(song.bpm >= 77) {
+      return '(Medium Tempo)'
+   } else {
+      return '(Slow Tempo)'
+   }
+}
+
+function songDurationFormat(durationInSeconds) {
+   const minutes = Math.floor(durationInSeconds / 60);
+   const seconds = durationInSeconds % 60;
+
+   return `${minutes}m ${seconds}s`;
+}
+
+function songRadarChart(container, song) {
+   const chartContainer = document.createElement('div');
+   chartContainer.className = 'song-radar-chart-column';
+   chartContainer.innerHTML = '<canvas id="radar-chart"></canvas>';
+   container.appendChild(chartContainer);
+
+   const chartCanvas = chartContainer.querySelector('#radar-chart');
+   chartCanvas.setAttribute('width', 50);
+   chartCanvas.setAttribute('height', 50);
+   const chartCtx = chartCanvas.getContext('2d');
+
+   const chartData = {
+      labels: ['Danceability', 'Energy', 'Valence', 'Liveness', 'Speechiness', 'Acousticness'],
+      datasets: [{
+         label: 'Radar Chart',
+         backgroundColor: 'rgba(75,192,192,0.2)',
+         borderColor: 'rgba(75,192,192,1)',
+         data: [
+            song.danceability,
+            song.energy,
+            song.valence, 
+            song.liveness,
+            song.speechiness,
+            song.acousticness
+         ]
+      }]
+   };
+
+   const chartOptions = {
+      scale: {
+         ticks: {beginAtZero: true, max: 100},
+         pointLabels: {fontsize: 14}
+      }
+   };
+
+   new Chart(chartCtx, {
+      type: 'radar',
+      data: chartData,
+      options: chartOptions
+   });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
    homeViewSetup();
 
-   document.querySelector('#search-link').addEventListener('click', function(event) {
+   document.querySelector('#search-link').addEventListener('click', function() {
       hideHomeView();
       showSearchView();
    })
 
-   document.querySelector('#home-link').addEventListener('click', function(event) {
+   document.querySelector('#home-link').addEventListener('click', function() {
       showHomeView();
       hideSearchView();
    })
 
-   function showHomeView() {
-      const homeView = document.querySelector('#home');
-      homeView.style.display = 'flex';
-   }
-
-   function hideHomeView() {
-      const homeView = document.querySelector('#home');
-      homeView.style.display = 'none';
-   }
-
-   function showSearchView() {
-      const searchView = document.querySelector('#search');
-      searchView.style.display = 'flex';
-
-      searchViewSetup();
-   }
-
-   function hideSearchView() {
-      const searchView = document.querySelector('#search');
-      searchView.style.display = 'none'
-   }
+   document.querySelector('#back-button').addEventListener('click', function() {
+      hideSingleSongView();
+      showSearchView();
+      document.querySelector('#searchResults').innerHTML = '';
+   })
 });
+
+function showSingleSongView() {
+   const singleSongView = document.querySelector('#single-song');
+   singleSongView.style.display = 'flex';
+}
+
+function hideSingleSongView() {
+   const singleSongView = document.querySelector('#single-song');
+   singleSongView.style.display = 'none';
+}
+
+function showHomeView() {
+   const homeView = document.querySelector('#home');
+   homeView.style.display = 'flex';
+}
+
+function hideHomeView() {
+   const homeView = document.querySelector('#home');
+   homeView.style.display = 'none';
+}
+
+function showSearchView() {
+   const searchView = document.querySelector('#search');
+   searchView.style.display = 'flex';
+
+   searchViewSetup();
+}
+
+function hideSearchView() {
+   const searchView = document.querySelector('#search');
+   searchView.style.display = 'none'
+}
