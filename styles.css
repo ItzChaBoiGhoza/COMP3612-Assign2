@@ -215,14 +215,33 @@ h4 {
 
 .popup {
     position: fixed;
-    top: 20%;
-    left: 50%;
+    top: 10%;
+    left: 77%;
     transform: translateX(-50%);
     background-color: #fff;
-    padding: 20px;
+    padding: 10px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     display: none;
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+}
+
+.popup-links {
+    list-style: none;
+    padding: 0;
+}
+
+.popup-links a {
+    padding-top: 15px;
+    text-decoration: none;
+    color: #000;
+}
+
+.popup-links a:hover {
+    color: #6cc644;
 }
 
 #single-song {

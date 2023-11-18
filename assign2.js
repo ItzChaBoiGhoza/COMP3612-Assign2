@@ -479,6 +479,15 @@ function songRadarChart(container, song) {
 document.addEventListener('DOMContentLoaded', function() {
    homeViewSetup();
 
+   document.querySelector('#credits-link').addEventListener('click', function() {
+      const creditsView = document.querySelector('#credits-popup');
+      if(creditsView.style.display === 'none') {
+         creditsView.style.display = 'flex';
+      } else {
+         creditsView.style.display = 'none';
+      }
+   })
+
    document.querySelector('#search-link').addEventListener('click', function() {
       hideHomeView();
       hidePlaylistView();
