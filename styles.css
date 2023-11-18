@@ -130,12 +130,12 @@ td {
     text-align: center;
 }
 
-.song-title a {
+.song-attribute a {
     text-decoration: none;
     color: #046bba;
 }
 
-.song-title a:hover {
+.song-attribute a:hover {
     color: #3aa5f7;
 }
 
