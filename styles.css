@@ -2,6 +2,8 @@ body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
+    background: hsla(40, 63%, 85%, 1);
+    background: linear-gradient(90deg, hsla(40, 63%, 85%, 1) 0%, hsla(22, 94%, 79%, 1) 100%);
 }
 
 .container {
@@ -11,7 +13,7 @@ body {
 }
 
 header {
-    background-color: #333;
+    background-color: #392F5A;
     padding: 35px;
     display: flex;
     justify-content: space-between;
@@ -28,7 +30,7 @@ header a, nav a {
     text-decoration: none;
     margin-right: 20px;
     padding: 10px 15px;
-    background-color: #333;
+    background-color: #392F5A;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -36,7 +38,8 @@ header a, nav a {
 }
 
 header a:hover, nav a:hover {
-    background-color: #555;
+    background-color: #9DD9D2;
+    color: #000;
 }
 
 main {
@@ -53,7 +56,7 @@ main {
 .home-column {
     width: 30%;
     margin: 15px;
-    background-color: #eee;
+    background-color: #FFF8F0;
     padding: 20px;
     border-radius: 8px;
 }
@@ -71,7 +74,7 @@ main {
 }
 
 .filter-column {
-    background-color: #eee;
+    background-color: #FFF8F0;
     padding: 15px;
     border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -111,7 +114,7 @@ form div {
 
 .results {
     display: flex;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #FFF8F0;
     padding: 10px 0;
     width: 100%;
 }
@@ -132,11 +135,11 @@ td {
 
 .song-attribute a {
     text-decoration: none;
-    color: #046bba;
+    color: #392F5A;
 }
 
 .song-attribute a:hover {
-    color: #3aa5f7;
+    color: #9DD9D2;
 }
 
 h4 {
@@ -148,7 +151,7 @@ h4 {
     text-decoration: none;
     font-size: 15px;
     color: #fff;
-    background-color: #017101b9;
+    background-color: #392F5A;
     border-radius: 10px;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
@@ -157,7 +160,8 @@ h4 {
 }
 
 .add-song-button a:hover {
-    background-color: #00be00b9;
+    background-color: #9DD9D2;
+    color: #000;
 }
 
 #clearButton {
@@ -169,6 +173,7 @@ h4 {
     border: none;
     cursor: pointer;
     color: #000;
+    background-color: #FFF8F0;
     border-radius: 5px;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
@@ -177,7 +182,7 @@ h4 {
 }
 
 #clearButton:hover {
-    color: #ff0000;
+    color: #9DD9D2;
 }
 
 #filterButton {
@@ -185,11 +190,11 @@ h4 {
     float: right;
     padding: 10px 25px;
     margin-top: 10px;
-    background-color: #2e2efe;
+    background-color: #392F5A;
     color: #fff;
     font-size: 15px;
     cursor: pointer;
-    border: 2px solid #2e2efe;
+    border: 2px solid #392F5A;
     border-radius: 5px;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
@@ -198,19 +203,9 @@ h4 {
 }
 
 #filterButton:hover {
-    border: 2px solid #2e2efe;
-    background-color: #5e5eff;
-}
-
-.snackbar {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #333;
-    color: #fff;
-    padding: 15px;
-    border-radius: 5px;
-    display: none;
+    border: 2px solid #9DD9D2;
+    background-color: #9DD9D2;
+    color: #000;
 }
 
 .popup {
@@ -218,7 +213,7 @@ h4 {
     top: 10%;
     left: 77%;
     transform: translateX(-50%);
-    background-color: #fff;
+    background-color: #FFF8F0;
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -256,7 +251,7 @@ h4 {
 
  .song-details {
     flex: 1;
-    background-color: #eee;
+    background-color: #FFF8F0;
     margin-right: 15px;
     padding: 15px;
     border-radius: 10px;
@@ -282,25 +277,25 @@ padding: 15px;
 #back-search-button {
     padding: 15px;
     text-decoration: none;
-    color: #046bba;
+    color: #392F5A;
     margin-top: 75px;
     float: right;
 }
 
 #back-search-button:hover {
-    color: #3aa5f7;
+    color: #9DD9D2;
 }
 
 #back-home-button {
     padding: 15px;
     text-decoration: none;
-    color: #046bba;
+    color: #392F5A;
     margin-top: 75px;
     float: left;
 }
 
 #back-home-button:hover {
-    color: #3aa5f7;
+    color: #9DD9D2;
 }
 
 #playlist {
@@ -308,7 +303,7 @@ padding: 15px;
 }
 
 .playlist {
-    background-color: #eee;
+    background-color: #FFF8F0;
     padding: 15px;
     border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -345,7 +340,6 @@ padding: 15px;
     color: #fff;
     text-decoration: none;
     font-size: 15px;
-    border: 2px solid #ff0000;
     border-radius: 10px;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
@@ -354,15 +348,15 @@ padding: 15px;
 }
 
 .playlist-clear a:hover {
-    border: 2px solid #ff0000;
     background-color: #f86464;
+    color: #000;
 }
 
 .remove-song a {
     text-decoration: none;
     color: #fff;
     padding: 5px 10px;
-    background-color: #ff0000;
+    background-color: #FF8811;
     border-radius: 5px;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
@@ -371,14 +365,15 @@ padding: 15px;
 }
 
 .remove-song a:hover {
-    background-color: #f86464;
+    background-color: #F4D06F;
+    color: #000;
 }
 
 footer {
     margin-top: 20px;
     padding: 25px;
-    background-color: #333;
-    color: #fff;
+    background-color: #392F5A;
+    color: #FFF8F0;
     text-align: center;
     border-radius: 10px;
     -webkit-border-radius: 10px;

@@ -1,8 +1,62 @@
 const api = 'http://www.randyconnolly.com/funwebdev/3rd/api/music';
 let playlist = [];
 
-//Fetching the data from the provided api
-function fetchDataApi(endpoint, filter = {}) { // Source for this function is from stack overflow
+const artistSelection = document.querySelector('#artistSelection');
+const genreSelection = document.querySelector('#genreSelection');
+const searchResultsContainer = document.querySelector('#searchResults');
+
+const createP = document.createElement('p');
+
+//---- DOM content loader
+document.addEventListener('DOMContentLoaded', function() {
+   homeViewSetup();
+
+   document.querySelector('#credits-link').addEventListener('mouseover', function() {
+      const creditsView = document.querySelector('#credits-popup');
+      creditsView.style.display = 'flex'
+      clearTimeout(timer);
+   })
+
+   document.querySelector('#credits-link').addEventListener('mouseout', function() {
+      timer = setTimeout(function() {
+         document.querySelector('#credits-popup').style.display = 'none';
+      }, 5000);
+   }) 
+
+   document.querySelector('#search-link').addEventListener('click', function() {
+      hideHomeView();
+      hidePlaylistView();
+      showSearchView();
+   })
+
+   document.querySelector('#home-link').addEventListener('click', function() {
+      showHomeView();
+      hideSearchView();
+      hidePlaylistView();
+      hideSingleSongView();
+   })
+
+   document.querySelector('#back-search-button').addEventListener('click', function() {
+      hideSingleSongView();
+      showSearchView();
+   })
+
+   document.querySelector('#back-home-button').addEventListener('click', function() {
+      showHomeView();
+      hideSingleSongView();
+   })
+
+   document.querySelector('#playlist-link').addEventListener('click', function() {
+      hideSearchView();
+      hideHomeView();
+      hideSingleSongView();
+      showPlaylistView();
+   })
+});
+
+//Fetching the data from the provided api 
+// Source for this function is from stack overflow https://stackoverflow.com/questions/60178380/add-params-to-url-with-javascript
+function fetchDataApi(endpoint, filter = {}) {
    const url = new URL(`${api}/${endpoint}`);
 
    // Append filter parameters to the URL
@@ -19,136 +73,89 @@ function fetchDataApi(endpoint, filter = {}) { // Source for this function is fr
       });
 }
 
+function optionPopulate(select, optionData, defaultText = '') {
+   select.innerHTML = `<option value="">${defaultText}</option>`;
+
+   optionData.forEach(function(item) {
+      const optionElement = document.createElement('option');
+      optionElement.value = item.name;
+      optionElement.textContent = item.name;
+      select.appendChild(optionElement);
+   })
+}
+
 //Put content inside the select option for Artist name
 function populateArtistOptions() {
-   const artistSelection = document.querySelector('#artistSelection');
-
-   fetchDataApi('artists.php')
-   .then(function (artistsData) {
-       artistSelection.innerHTML = '<option value="">Pick One</option>';
-
-       artistsData.forEach(function (artist) {
-           const optionElement = document.createElement('option');
-           optionElement.value = artist.name; 
-           optionElement.textContent = artist.name; 
-           artistSelection.appendChild(optionElement);
-       });
-   })
-   .catch(function (error) {
-       console.error('Error fetching artists:', error);
-   });
+   fetchDataApi('artists.php') 
+      .then(function(artistData) {
+         optionPopulate(artistSelection, artistData, 'Pick One');
+      })
+      .catch(function(err) {
+         console.log(err);
+      });
 }
 
 //Put content inside the select option for Genre 
 function populateGenreOptions() {
-   const genreSelection = document.querySelector('#genreSelection');
-
    fetchDataApi('genres.php')
-      .then(function (genresData) {
-         genreSelection.innerHTML = '<option value="">Pick One</option>';
-
-         genresData.forEach(function (genre) {
-            const optionElement = document.createElement('option');
-            optionElement.value = genre.name;
-            optionElement.textContent = genre.name;
-            genreSelection.appendChild(optionElement);
-         });
+      .then(function(genreData) {
+         optionPopulate(genreSelection, genreData, 'Pick One');
       })
-      .catch(function (error) {
-         console.error('Error fetching genres:', error);
-      });
+      .catch(function(err) {
+         console.log(err);
+      })
 }
 
-//---- Home View Configuration
-function displayTopGenre(container, data) {
-   const searchResultsContainer = document.querySelector('#searchResults');
-   
-   const genreCounts = [];
+//---- Home View Functions
+function topItemDisplay(container, data, title, itemKey, count) {
+   const itemCounts = [];
 
-   data.forEach(function(song) {
-      const genreName = song.genre_name;
+   data.forEach(function(item) {
+      const itemName = item[itemKey];
 
-      const genreExist = genreCounts.find(function(genre) {
-         return genre.name === genreName;
+      const itemExist = itemCounts.find(function(itemExisting) {
+         return itemExisting.name === itemName;
       });
 
-      if(genreExist) {
-         genreExist.count++;
+      if(itemExist) {
+         itemExist.count++;
       } else {
-         genreCounts.push({ name: genreName, count: 1});
+         itemCounts.push({name: itemName, count: 1});
       }
    });
-   // console.log(genreCounts);
 
-   const topGenres = genreCounts.sort((a, b) => b.count - a.count).slice(0, 15);
+   const topItems = itemCounts.sort((a, b) => count(b) - count(a)).slice(0, 15);
 
-   container.innerHTML = '<h3>Top Genres</h3>';
+   container.innerHTML = `<h3>${title}</h3>`;
 
-   topGenres.forEach(function(genre) {
-      const genreElement = document.createElement('p');
+   topItems.forEach(function(item) {
+      const itemElement = document.createElement('p');
 
-      const genreLink = document.createElement('a');
-      genreLink.href = '#';
-      genreLink.textContent = genre.name;
-      genreElement.classList.add('song-attribute');
-      genreLink.addEventListener('click', function() {
-         const clickedGenre = data.filter(function(song) {
-            return genre.name === song.genre_name;
-         })
+      const itemLink = document.createElement('a');
+      itemLink.href = '#';
+      itemLink.textContent = item.name;
+      itemElement.classList.add('song-attribute');
+      itemLink.addEventListener('click', function() {
+         const clickedItems = data.filter(function(dataItem) {
+            return item.name === dataItem[itemKey];
+         });
 
          hideHomeView();
          showSearchView();
-         displaySearchResults(searchResultsContainer, clickedGenre);
+         displaySearchResults(searchResultsContainer, clickedItems);
       });
-      genreElement.appendChild(genreLink);
-      container.appendChild(genreElement);
-   })
+
+      itemElement.appendChild(itemLink);
+      container.appendChild(itemElement);
+   });
+}
+
+function displayTopGenre(container, data) {
+   topItemDisplay(container, data, 'Top Genres', 'genre_name', (item) => item.count);
 }
 
 function displayTopArtist(container, data) {
-   const searchResultsContainer = document.querySelector('#searchResults');
-
-   container.innerHTML = '<h3>Top Artists</h3>';
-
-   const artistCounts = [];
-
-   data.forEach(function(song) {
-      const artistName = song.artist_name;
-      
-      const artistExist = artistCounts.find(function(artist) {
-         return artist.name === artistName;
-      });
-
-      if(artistExist) {
-         artistExist.count++;
-      } else {
-         artistCounts.push({ name: artistName, count: 1});
-      }
-   });
-   // console.log(artistCounts);
-
-   const topArtists = artistCounts.sort((a, b) => b.count - a.count).slice(0, 15);
-
-   // console.log(topArtists);
-   topArtists.forEach(function(artist) {
-      const artistElement = document.createElement('p');
-
-      const artistLink = document.createElement('a');
-      artistLink.href = '#';
-      artistLink.textContent = artist.name;
-      artistElement.classList.add('song-attribute');
-      artistLink.addEventListener('click', function() {
-         const clickedArtist = data.filter(function(song) {
-            return artist.name === song.artist_name;
-         })
-
-         hideHomeView();
-         showSearchView();
-         displaySearchResults(searchResultsContainer, clickedArtist);
-      });
-      artistElement.appendChild(artistLink);
-      container.appendChild(artistElement);
-   })
+   topItemDisplay(container, data, 'Top Artists', 'artist_name', (item) => item.count);
 }
 
 function displayMostPopularSongs(container, data) {
@@ -189,7 +196,17 @@ function homeViewSetup() {
       }) ;
 }
 
-//---- Search View Configuration
+function showHomeView() {
+   const homeView = document.querySelector('#home');
+   homeView.style.display = 'flex';
+}
+
+function hideHomeView() {
+   const homeView = document.querySelector('#home');
+   homeView.style.display = 'none';
+}
+
+//---- Search View Functions
 function searchViewSetup() {
    const filterForm = document.querySelector('#filter-song');
    const searchResultsContainer = document.querySelector('#searchResults');
@@ -201,7 +218,7 @@ function searchViewSetup() {
       
       if (clickedButton === 'filterButton') {
          fetchDataApi('songs.php')
-         .then(function (allSongsData) {
+         .then(function(allSongsData) {
             const filterCriteria = document.querySelector('input[name="filterCriteria"]:checked').id;
             const inputValue = document.querySelector('#titleInput').value;
 
@@ -251,7 +268,7 @@ function displaySearchResults(container, searchResultsData) {
 
    const resultSearchTableHead = document.createElement('thead');
    const resultSearchHeaderRow = document.createElement('tr');
-   ['Title', 'Artist', 'Year', 'Genre', 'Add to Playlist'].forEach(function (headerText) {
+   ['Title', 'Artist', 'Year', 'Genre', 'Add to Playlist'].forEach(function(headerText) {
       const resultSearchTh = document.createElement('th');
       resultSearchTh.textContent = headerText;
       resultSearchHeaderRow.appendChild(resultSearchTh);
@@ -314,7 +331,19 @@ function addSongToPlayList(song) {
    }
 }
 
-//---- Playlist View Configuration
+function showSearchView() {
+   const searchView = document.querySelector('#search');
+   searchView.style.display = 'flex';
+
+   searchViewSetup();
+}
+
+function hideSearchView() {
+   const searchView = document.querySelector('#search');
+   searchView.style.display = 'none'
+}
+
+//---- Playlist View Functions
 function removeSongFromPlaylist(songId) {
    playlist = playlist.filter(song => song.song_id !== songId);
    updatePlaylistView();
@@ -383,6 +412,16 @@ function calculatePopularity() {
    const totalPopularity = playlist.reduce((sum, song) => sum + parseInt(song.popularity), 0);
 
    return totalPopularity / playlist.length;
+}
+
+function showPlaylistView() {
+   const playlistView = document.querySelector('#playlist');
+   playlistView.style.display = 'block';
+}
+
+function hidePlaylistView() {
+   const playlistView = document.querySelector('#playlist');
+   playlistView.style.display = 'none';
 }
 
 //---- Single Song View Configuration
@@ -475,61 +514,6 @@ function songRadarChart(container, song) {
    });
 }
 
-//---- DOM content loader
-document.addEventListener('DOMContentLoaded', function() {
-   homeViewSetup();
-
-   document.querySelector('#credits-link').addEventListener('click', function() {
-      const creditsView = document.querySelector('#credits-popup');
-      if(creditsView.style.display === 'none') {
-         creditsView.style.display = 'flex';
-      } else {
-         creditsView.style.display = 'none';
-      }
-   })
-
-   document.querySelector('#search-link').addEventListener('click', function() {
-      hideHomeView();
-      hidePlaylistView();
-      showSearchView();
-   })
-
-   document.querySelector('#home-link').addEventListener('click', function() {
-      showHomeView();
-      hideSearchView();
-      hidePlaylistView();
-      hideSingleSongView();
-   })
-
-   document.querySelector('#back-search-button').addEventListener('click', function() {
-      hideSingleSongView();
-      showSearchView();
-   })
-
-   document.querySelector('#back-home-button').addEventListener('click', function() {
-      showHomeView();
-      hideSingleSongView();
-   })
-
-   document.querySelector('#playlist-link').addEventListener('click', function() {
-      hideSearchView();
-      hideHomeView();
-      hideSingleSongView();
-      showPlaylistView();
-   })
-});
-
-//---- Supporting functions for DOM content loader
-function showPlaylistView() {
-   const playlistView = document.querySelector('#playlist');
-   playlistView.style.display = 'block';
-}
-
-function hidePlaylistView() {
-   const playlistView = document.querySelector('#playlist');
-   playlistView.style.display = 'none';
-}
-
 function showSingleSongView() {
    const singleSongView = document.querySelector('#single-song');
    singleSongView.style.display = 'flex';
@@ -538,26 +522,4 @@ function showSingleSongView() {
 function hideSingleSongView() {
    const singleSongView = document.querySelector('#single-song');
    singleSongView.style.display = 'none';
-}
-
-function showHomeView() {
-   const homeView = document.querySelector('#home');
-   homeView.style.display = 'flex';
-}
-
-function hideHomeView() {
-   const homeView = document.querySelector('#home');
-   homeView.style.display = 'none';
-}
-
-function showSearchView() {
-   const searchView = document.querySelector('#search');
-   searchView.style.display = 'flex';
-
-   searchViewSetup();
-}
-
-function hideSearchView() {
-   const searchView = document.querySelector('#search');
-   searchView.style.display = 'none'
 }
