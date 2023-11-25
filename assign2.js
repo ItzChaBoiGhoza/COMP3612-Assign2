@@ -1,4 +1,4 @@
-const api = 'http://www.randyconnolly.com/funwebdev/3rd/api/music';
+const api = 'https://www.randyconnolly.com/funwebdev/3rd/api/music';
 
 //Initializing empty array for keeping track of the added songs into the playlist
 let playlist = [];
