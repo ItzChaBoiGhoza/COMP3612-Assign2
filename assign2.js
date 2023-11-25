@@ -1,11 +1,12 @@
 const api = 'http://www.randyconnolly.com/funwebdev/3rd/api/music';
+
+//Initializing empty array for keeping track of the added songs into the playlist
 let playlist = [];
 
+//HTML selectors 
 const artistSelection = document.querySelector('#artistSelection');
 const genreSelection = document.querySelector('#genreSelection');
 const searchResultsContainer = document.querySelector('#searchResults');
-
-const createP = document.createElement('p');
 
 //---- DOM content loader
 document.addEventListener('DOMContentLoaded', function() {
@@ -55,7 +56,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 //Fetching the data from the provided api 
-// Source for this function is from stack overflow https://stackoverflow.com/questions/60178380/add-params-to-url-with-javascript
+//Source for this function is from stack overflow 
+//https://stackoverflow.com/questions/60178380/add-params-to-url-with-javascript
 function fetchDataApi(endpoint, filter = {}) {
    const url = new URL(`${api}/${endpoint}`);
 
@@ -73,6 +75,7 @@ function fetchDataApi(endpoint, filter = {}) {
       });
 }
 
+//Function to populate the select options
 function optionPopulate(select, optionData, defaultText = '') {
    select.innerHTML = `<option value="">${defaultText}</option>`;
 
@@ -111,6 +114,7 @@ function topItemDisplay(container, data, title, itemKey, count) {
    const itemCounts = [];
 
    data.forEach(function(item) {
+      // console.log(item);
       const itemName = item[itemKey];
 
       const itemExist = itemCounts.find(function(itemExisting) {
@@ -124,11 +128,13 @@ function topItemDisplay(container, data, title, itemKey, count) {
       }
    });
 
+   //method to sort items based on their count frequency inside the array
    const topItems = itemCounts.sort((a, b) => count(b) - count(a)).slice(0, 15);
 
    container.innerHTML = `<h3>${title}</h3>`;
 
    topItems.forEach(function(item) {
+      // console.log(item);
       const itemElement = document.createElement('p');
 
       const itemLink = document.createElement('a');
@@ -159,11 +165,13 @@ function displayTopArtist(container, data) {
 }
 
 function displayMostPopularSongs(container, data) {
+   //method to sort the most popular song based on their popularity
    const popularSongs = data.sort((a, b) => b.popularity - a.popularity).slice(0, 15);
 
    container.innerHTML = '<h3>Most Popular Songs</h3>';
 
    popularSongs.forEach(function(song) {
+      // console.log(song);
       const creatingSongElement = document.createElement('p');
       const songLink = document.createElement('a');
       songLink.href = '#';
@@ -190,6 +198,7 @@ function homeViewSetup() {
          displayTopGenre(topGenreView, songsData);
          displayTopArtist(topArtistView, songsData);
          displayMostPopularSongs(mostPopularSongView, songsData);
+         // console.log(songsData);
       })
       .catch(function(err) {
          console.log(err);
@@ -212,18 +221,18 @@ function searchViewSetup() {
    const searchResultsContainer = document.querySelector('#searchResults');
 
    filterForm.addEventListener('submit', function (event) {
-      event.preventDefault(); // Prevents the default form submission behavior
-
       const clickedButton = event.submitter.id;
       
       if (clickedButton === 'filterButton') {
          fetchDataApi('songs.php')
          .then(function(allSongsData) {
+            // console.log(allSongsData);
             const filterCriteria = document.querySelector('input[name="filterCriteria"]:checked').id;
             const inputValue = document.querySelector('#titleInput').value;
 
             let filteredSongs = allSongsData;
 
+            //If else statement to figure out which radio button is selected
             if (filterCriteria === 'artist') {
                const selectedArtist = document.querySelector('#artistSelection').value;
                filteredSongs = allSongsData.filter(song => song.artist_name === selectedArtist);
@@ -241,8 +250,8 @@ function searchViewSetup() {
 
             displaySearchResults(searchResultsContainer, filteredSongs);
          })
-         .catch(function (error) {
-            console.error('Error fetching search results:', error);
+         .catch(function(err) {
+            console.log(err);
          });
       } 
    });
@@ -260,7 +269,6 @@ function searchViewSetup() {
 }
 
 function displaySearchResults(container, searchResultsData) {
-   
    container.innerHTML = '';
 
    const resultSearchTable = document.createElement('table');
@@ -277,12 +285,14 @@ function displaySearchResults(container, searchResultsData) {
    resultSearchTable.appendChild(resultSearchTableHead);
 
    const resultSearchTableBody = document.createElement('tbody');
-   searchResultsData.forEach(function (song) {
+   searchResultsData.forEach(function(song) {
+      // console.log(song);
       const resultSearchTr = document.createElement('tr');
 
-      ['title', 'artist_name', 'year', 'genre_name'].forEach(function (columnName) {
+      ['title', 'artist_name', 'year', 'genre_name'].forEach(function(columnName) {
          const resultSearchTd = document.createElement('td');
 
+         //If statement to make the song title clickable
          if (columnName === 'title') {
             const titleLink = document.createElement('a');
             titleLink.href = '#'; 
@@ -322,8 +332,11 @@ function displaySearchResults(container, searchResultsData) {
    container.appendChild(resultSearchTable);
 }
 
+//Function to be able to add song into the playlist
 function addSongToPlayList(song) {
-   if(!playlist.some(item => item.song_id === song.song_id)) {
+   if(!playlist.some(function(item) {
+      return item.song_id === song.song_id;
+   })) {
       playlist.push(song);
       updatePlaylistView();
    } else {
@@ -345,7 +358,10 @@ function hideSearchView() {
 
 //---- Playlist View Functions
 function removeSongFromPlaylist(songId) {
-   playlist = playlist.filter(song => song.song_id !== songId);
+   playlist = playlist.filter(function(song) {
+      return song.song_id !== songId;
+   });
+
    updatePlaylistView();
 }
 
@@ -426,6 +442,7 @@ function hidePlaylistView() {
 
 //---- Single Song View Configuration
 function singleSongView(song) {
+   // console.log(song);
    hideSearchView();
    hidePlaylistView();
    document.querySelector('#song-title').textContent = `${song.title}`;
@@ -453,6 +470,7 @@ function singleSongView(song) {
    songRadarChart(chartContainer, song);
 }
 
+//Function to show what the song's tempo means
 function songTempoMean(song) {
    if(song.bpm >= 169) {
       return '(Very Fast Tempo)';
@@ -465,6 +483,9 @@ function songTempoMean(song) {
    }
 }
 
+//Function to show the song's duration in minutes and seconds; rather than showing it seconds only
+//Got the idea from a stack overflow
+//https://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
 function songDurationFormat(durationInSeconds) {
    const minutes = Math.floor(durationInSeconds / 60);
    const seconds = durationInSeconds % 60;
@@ -472,6 +493,9 @@ function songDurationFormat(durationInSeconds) {
    return `${minutes}m ${seconds}s`;
 }
 
+//Function to display the song's attributes using radar chart
+//Full Chart.js documentation on radar chart
+//https://www.chartjs.org/docs/latest/charts/radar.html
 function songRadarChart(container, song) {
    const chartContainer = document.createElement('div');
    chartContainer.className = 'song-radar-chart-column';
@@ -483,6 +507,7 @@ function songRadarChart(container, song) {
    chartCanvas.setAttribute('height', 50);
    const chartCtx = chartCanvas.getContext('2d');
 
+   //https://stackoverflow.com/questions/47988873/chartjs-add-backgroundcolor-for-labels-radar-chart
    const chartData = {
       labels: ['Danceability', 'Energy', 'Valence', 'Liveness', 'Speechiness', 'Acousticness'],
       datasets: [{
@@ -500,6 +525,7 @@ function songRadarChart(container, song) {
       }]
    };
 
+   //https://www.chartjs.org/docs/latest/samples/scale-options/ticks.html
    const chartOptions = {
       scale: {
          ticks: {beginAtZero: true, max: 100},
@@ -507,6 +533,8 @@ function songRadarChart(container, song) {
       }
    };
 
+   //Controller for each dataset, introduced in Chart.js 2.0
+   //https://www.chartjs.org/docs/latest/developers/charts.html
    new Chart(chartCtx, {
       type: 'radar',
       data: chartData,

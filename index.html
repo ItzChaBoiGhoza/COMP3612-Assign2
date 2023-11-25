@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>COMP 3612 - Single Page Application</title>
         <link rel="stylesheet" href="styles.css">
+        <!-- JS chart for displaying the radar chart of selected song -->
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body>
@@ -27,6 +28,7 @@
                     <div class="home-column">
                     </div>
                 </div>
+                <!-- Song search view -->
                 <div id="search" class="filter">
                     <div class="filter-column">
                         <h3>Basic Song Search</h3>
@@ -40,14 +42,14 @@
                                 <input type="radio" id="artist" name="filterCriteria">
                                 <label for="artist">Artist</label>
                                 <select id="artistSelection">
-                                    <!-- Populate with artist dynamically if needed -->
+                                    <!-- Populate with artist dynamically -->
                                 </select>
                             </div>
                             <div>
                                 <input type="radio" id="genre" name="filterCriteria">
                                 <label for="genre">Genre</label>
                                 <select id="genreSelection">
-                                    <!-- Populate with genre dynamically if needed -->
+                                    <!-- Populate with genre dynamically -->
                                 </select>
                             </div>
                             <div>
@@ -60,10 +62,12 @@
                         <h3>Browse / Search Results</h3>
                         <div id="searchResults">
                             <div class="result-item">
+                                <!-- Populate with filtered/searched songs -->
                             </div>
                         </div>
                     </div>
                 </div>
+                <!-- Single song view -->
                 <div id="single-song" class="single-song">
                     <div class="song-details" id="song-details">
                         <h3>Song Information</h3>
@@ -77,6 +81,7 @@
                         <div class="song-analysis">
                             <h4>Song Analysis Data:</h4>
                             <ul id="analysis-list">
+                                <!-- Populate with selected song analysis -->
                             </ul>
                         </div>
                         <div>
@@ -89,6 +94,7 @@
                         <canvas id="radar-chart"></canvas>
                     </div>
                 </div>
+                <!-- Playlist view -->
                 <div id="playlist" class="playlist">
                     <div class="playlist-container">
                         <div class="playlist-view-title">
