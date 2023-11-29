@@ -1,3 +1,8 @@
+//There are a few funtionalities that I haven't implemented. One is sort list and the other one is 25 letters max.
+//I didnt implement the sort list function because I realize that using a table wasn't a good idea. I could not figure out a way to implement a button for the sort list.
+//If I realized this sooner, I would have choosen to create a div instead of creating a table to show list. 
+//I tried implementing the sort list, but I could not get it functioning properly.
+
 const api = 'https://www.randyconnolly.com/funwebdev/3rd/api/music';
 
 //Initializing empty array for keeping track of the added songs into the playlist
